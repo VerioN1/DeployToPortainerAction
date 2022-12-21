@@ -12,7 +12,10 @@ inputs:
   current-repo-url:
     descprtion: 'current repository url'
     default: 'https://github.com/VerioN1/cam-code-demo'
-    
+  branch-ref:
+    descprtion: 'current repository branch ref'
+    default: 'refs/heads/main' 
+
 runs:
   using: 'node16'
   main: 'dist/index.js' 

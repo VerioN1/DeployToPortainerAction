@@ -1,11 +1,11 @@
 const axios = require("axios");
 const core = require("@actions/core");
 
-const PROJECT_NAME = core.getInput("project-name") || "camcode-demo";
-const REPO_URL = core.getInput("current-repo-url") || 'https://github.com/VerioN1/cam-code-demo/';
+const PROJECT_NAME = core.getInput("project-name") || "cam-code";
+const REPO_URL = core.getInput("current-repo-url") || 'https://github.com/VerioN1/cam-code/';
 const COMPOSE_FILE = "docker-compose-prod.yml";
 const ENV = []
-const BRANCH_NAME_REF = "refs/heads/main";
+const BRANCH_NAME_REF = core.getInput('branch-ref') || "refs/heads/main";
 const baseURL = core.getInput("deployment-env") === 'prod' ? "http://apps.varcode.com:9000/api" : "http://apps-dev.varcode.com:9000/api";
 
 let api;

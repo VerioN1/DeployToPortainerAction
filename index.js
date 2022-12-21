@@ -1,5 +1,6 @@
 const axios = require("axios");
 const errorPretify  = require( "pretty-error");
+require('dotenv').config();
 
 const PROJECT_NAME = "camcode-demo";
 const REPO_URL = "https://github.com/VerioN1/cam-code-demo.git"
@@ -39,7 +40,7 @@ const deployStack = async() => {
             ComposeFile: stackConfig?.GitConfig?.ConfigFilePath || COMPOSE_FILE,
             Env: stackConfig?.GitConfig?.Env || ENV,
             repositoryAuthentication: true,
-            repositoryPassword: "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",
+            repositoryPassword: "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",
             repositoryReferenceName: stackConfig?.GitConfig?.ReferenceName || BRANCH_NAME_REF,
             repositoryUsername: "VerioN1"
         });

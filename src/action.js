@@ -1,13 +1,12 @@
 const axios = require("axios");
 const core = require("@actions/core");
 
-const PROJECT_NAME = "camcode-demo";
-const REPO_URL = core.getInput("current-repo-url");
+const PROJECT_NAME = core.getInput("project-name") || "camcode-demo";
+const REPO_URL = core.getInput("current-repo-url") || 'https://github.com/VerioN1/cam-code-demo/';
 const COMPOSE_FILE = "docker-compose-prod.yml";
 const ENV = []
 const BRANCH_NAME_REF = "refs/heads/main";
-const deploymentEnv = core.getInput("deployment-env");
-const baseURL = deploymentEnv === 'prod' ? "http://apps.varcode.com:9000/api" : "http://apps-dev.varcode.com:9000/api";
+const baseURL = core.getInput("deployment-env") === 'prod' ? "http://apps.varcode.com:9000/api" : "http://apps-dev.varcode.com:9000/api";
 
 let api;
 let stackConfig = {};
@@ -30,11 +29,9 @@ const connect = async() => {
 
 const deployStack = async() => {
     try {
-        const targetProject = core.getInput("project-name");
         console.log("deploying stack...");
-        console.log('targetProject: ', targetProject)
         const createStack = await api.post("/stacks?method=repository&type=2&endpointId=2",{
-            Name: targetProject || PROJECT_NAME,
+            Name:PROJECT_NAME,
             RepositoryURL: stackConfig?.GitConfig?.URL || REPO_URL,
             ComposeFile: stackConfig?.GitConfig?.ConfigFilePath || COMPOSE_FILE,
             Env: stackConfig?.GitConfig?.Env || ENV,
@@ -80,6 +77,7 @@ const deleteStack = async() => {
 }
 
 const main = async() => {
+    console.log('targetProject: ', PROJECT_NAME)
     await connect();
     await deleteStack();
     console.log(stackConfig);

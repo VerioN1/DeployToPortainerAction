@@ -9049,11 +9049,12 @@ const connect = async() => {
 const deployStack = async() => {
     try {
         console.log("deploying stack...");
+        console.log("Env variables", stackConfig?.Env);
         const createStack = await api.post("/stacks?method=repository&type=2&endpointId=2",{
             Name:PROJECT_NAME,
             RepositoryURL: stackConfig?.GitConfig?.URL || REPO_URL,
             ComposeFile: stackConfig?.GitConfig?.ConfigFilePath || COMPOSE_FILE,
-            Env: stackConfig?.GitConfig?.Env || ENV,
+            Env: stackConfig?.Env || ENV,
             repositoryAuthentication: true,
             repositoryPassword: "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",
             repositoryReferenceName: stackConfig?.GitConfig?.ReferenceName || BRANCH_NAME_REF,

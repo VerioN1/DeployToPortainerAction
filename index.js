@@ -11,13 +11,15 @@ const baseURL = "http://apps-dev.varcode.com:9000/api";
 
 let api;
 let stackConfig = {};
+let jwt;
+
 const connect = async() => {
     const {data: getJWToken} = await axios.post("http://apps-dev.varcode.com:9000/api/auth",{
         "password": "HelpIneed2021",
         "username": "admin"
     });
 
-    const jwt = getJWToken.jwt;
+    jwt = getJWToken.jwt;
 
     api = axios.create({
         baseURL,
@@ -30,6 +32,7 @@ const connect = async() => {
 const deployStack = async() => {
     try {
         console.log("deploying stack...");
+        console.log('stackJWT : ', jwt)
         const createStack = await api.post("/stacks?method=repository&type=2&endpointId=2",{
             Name: PROJECT_NAME,
             RepositoryURL: stackConfig.GitConfig.URL || REPO_URL,

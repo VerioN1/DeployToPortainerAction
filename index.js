@@ -35,12 +35,12 @@ const deployStack = async() => {
         console.log('stackJWT : ', jwt)
         const createStack = await api.post("/stacks?method=repository&type=2&endpointId=2",{
             Name: PROJECT_NAME,
-            RepositoryURL: stackConfig.GitConfig.URL || REPO_URL,
-            ComposeFile: stackConfig.GitConfig.ConfigFilePath || COMPOSE_FILE,
-            Env: stackConfig.GitConfig.Env || ENV,
+            RepositoryURL: stackConfig?.GitConfig?.URL || REPO_URL,
+            ComposeFile: stackConfig?.GitConfig?.ConfigFilePath || COMPOSE_FILE,
+            Env: stackConfig?.GitConfig?.Env || ENV,
             repositoryAuthentication: true,
-            repositoryPassword: "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",
-            repositoryReferenceName: stackConfig.GitConfig.ReferenceName || BRANCH_NAME_REF,
+            repositoryPassword: "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",
+            repositoryReferenceName: stackConfig?.GitConfig?.ReferenceName || BRANCH_NAME_REF,
             repositoryUsername: "VerioN1"
         });
         console.log("stack deployed!", JSON.stringify(createStack.data, null, 2));

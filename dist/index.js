@@ -9021,11 +9021,12 @@ const axios = __nccwpck_require__(8757);
 const core = __nccwpck_require__(2186);
 
 const PROJECT_NAME = "camcode-demo";
-const REPO_URL = "https://github.com/VerioN1/cam-code-demo.git"
+const REPO_URL = core.getInput("current-repo-url");
 const COMPOSE_FILE = "docker-compose-prod.yml";
 const ENV = []
 const BRANCH_NAME_REF = "refs/heads/main";
-const baseURL = "http://apps-dev.varcode.com:9000/api";
+const deploymentEnv = core.getInput("deployment-env");
+const baseURL = deploymentEnv === 'prod' ? "http://apps.varcode.com:9000/api" : "http://apps-dev.varcode.com:9000/api";
 // const baseURL = "http://apps.varcode.com:9000/api";
 
 let api;
@@ -9051,6 +9052,7 @@ const connect = async() => {
 const deployStack = async() => {
     try {
         const targetProject = core.getInput("project-name");
+        
         console.log("deploying stack...");
         console.log('targetProject: ', targetProject)
         const createStack = await api.post("/stacks?method=repository&type=2&endpointId=2",{

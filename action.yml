@@ -6,7 +6,13 @@ inputs:
   project-name:
     description: 'Target project name to deploy'
     default: 'camcode-demo1'
-
+  deployment-env:
+    descprtion: 'develop Or prod'
+    default: 'develop'  
+  current-repo-url:
+    descprtion: 'current repository url'
+    default: 'https://github.com/VerioN1/cam-code-demo'
+    
 runs:
   using: 'node16'
   main: 'dist/index.js' 

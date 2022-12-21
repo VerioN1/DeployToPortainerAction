@@ -15,3 +15,5 @@ jobs:
       - uses: ./
         with:
           project-name: 'camcode-demo'
+          deployment-env: 'develop'
+          current-repo-url: 'https://github.com/VerioN1/cam-code-demo'

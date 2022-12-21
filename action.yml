@@ -1,0 +1,7 @@
+name: 'Deploy To Portainer'
+description: 'Deploy with creds'
+author: 'Alon B'
+
+runs:
+  using: 'node16'
+  main: 'index.js' 

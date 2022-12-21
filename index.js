@@ -40,7 +40,7 @@ const deployStack = async() => {
             ComposeFile: stackConfig?.GitConfig?.ConfigFilePath || COMPOSE_FILE,
             Env: stackConfig?.GitConfig?.Env || ENV,
             repositoryAuthentication: true,
-            repositoryPassword: "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",
+            repositoryPassword: "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",
             repositoryReferenceName: stackConfig?.GitConfig?.ReferenceName || BRANCH_NAME_REF,
             repositoryUsername: "VerioN1"
         });

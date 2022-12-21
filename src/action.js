@@ -1,6 +1,5 @@
 const axios = require("axios");
-const errorPretify  = require( "pretty-error");
-require('dotenv').config();
+const core = require("@actions/core");
 
 const PROJECT_NAME = "camcode-demo";
 const REPO_URL = "https://github.com/VerioN1/cam-code-demo.git"
@@ -32,8 +31,9 @@ const connect = async() => {
 
 const deployStack = async() => {
     try {
+        const targetProject = core.getInput("project-name");
         console.log("deploying stack...");
-        console.log('stackJWT : ', process.env.USER_ID)
+        console.log('targetProject: ', targetProject)
         const createStack = await api.post("/stacks?method=repository&type=2&endpointId=2",{
             Name: PROJECT_NAME,
             RepositoryURL: stackConfig?.GitConfig?.URL || REPO_URL,
@@ -45,12 +45,8 @@ const deployStack = async() => {
             repositoryUsername: "VerioN1"
         });
         console.log("stack deployed!", JSON.stringify(createStack.data, null, 2));
-        // const {data: getStack} = await api.get("/stacks?filters=%7B%22EndpointID%22:2,%22IncludeOrphanedStacks%22:true%7D");
-        // console.log(getStack);
     } catch (error) {
-        const pe = new errorPretify();
-        console.log(pe.render(error));
-        console.log(error.response.data);
+      console.log(error.response.data);
       console.log(error.response.status);
       console.log(error.response.headers);
     }
@@ -78,8 +74,6 @@ const deleteStack = async() => {
         await Promise.allSettled(removeImages);
 
     } catch (error) {
-      const pe = new errorPretify();
-      console.log(pe.render(error));
       console.log(error.response.data);
       console.log(error.response.status);
       console.log(error.response.headers);

@@ -9,9 +9,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v3
-        env:
-          USER_ID: Hello
         with:
           node-version: 16
       - run: npm ci
       - uses: ./
+        with:
+          project-name: 'camcode-demo'

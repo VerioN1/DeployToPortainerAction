@@ -2,6 +2,11 @@ name: 'Deploy To Portainer'
 description: 'Deploy with creds'
 author: 'Alon B'
 
+inputs:
+  project-name:
+    description: 'Target project name to deploy'
+    default: 'camcode-demo1'
+
 runs:
   using: 'node16'
-  main: 'index.js' 
+  main: 'dist/index.js' 

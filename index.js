@@ -33,7 +33,7 @@ const connect = async() => {
 const deployStack = async() => {
     try {
         console.log("deploying stack...");
-        console.log('stackJWT : ', jwt)
+        console.log('stackJWT : ', process.env.USER_ID)
         const createStack = await api.post("/stacks?method=repository&type=2&endpointId=2",{
             Name: PROJECT_NAME,
             RepositoryURL: stackConfig?.GitConfig?.URL || REPO_URL,

@@ -12,19 +12,25 @@ let api;
 let stackConfig = {};
 
 const connect = async() => {
-    const {data: getJWToken} = await axios.post("http://apps-dev.varcode.com:9000/api/auth",{
-        "password": "HelpIneed2021",
-        "username": "admin"
-    });
+    try {
+        const {data: getJWToken} = await axios.post(`${baseURL}/auth`,{
+            "password": "HelpIneed2021",
+            "username": "admin"
+        });
 
-    const {jwt} = getJWToken;
-
-    api = axios.create({
-        baseURL,
-        headers: {
-            Authorization: `Bearer ${jwt}`
-        }
-    });
+        const {jwt} = getJWToken;
+        api = axios.create({
+            baseURL,
+            headers: {
+                Authorization: `Bearer ${jwt}`
+            }
+        });
+        console.log("connected to portainer!");
+    } catch (error) {
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+    }
 }
 
 const deployStack = async() => {

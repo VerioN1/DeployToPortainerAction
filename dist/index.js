@@ -9026,7 +9026,7 @@ const COMPOSE_FILE = "docker-compose-prod.yml";
 const ENV = []
 const BRANCH_NAME_REF = core.getInput('branch-ref') || "refs/heads/main";
 const baseURL = core.getInput("deployment-env") === 'prod' ? "http://apps.varcode.com:9000/api" : "http://apps-dev.varcode.com:9000/api";
-
+// must run npm build before any push to master
 let api;
 let stackConfig = {};
 
@@ -9064,7 +9064,7 @@ const deleteStack = async() => {
         if(currentStackConfig){
             stackConfig = currentStackConfig;
         }
-        const stackIdToDelete = getStacks.find(stack => stack.Name === PROJECT_NAME)?.Id;
+        const stackIdToDelete = currentStackConfig?.Id;
         if(stackIdToDelete){
             console.log("deleting stack", stackIdToDelete);
             const {data: deleteStack} = await api.delete(`/stacks/${stackIdToDelete}?endpointId=2&external=false`);
@@ -9083,7 +9083,7 @@ const deleteStack = async() => {
 
     } catch (error) {
       console.log(error.response.data);
-      if(error.response.data.message.includes("Stopping")){
+      if(error.response.data.message.includes("Stopping") || error.response.data.message.includes("Removing")){
         console.log("stack is stopping, waiting 10 seconds");
         await sleep(10000);
         await deleteStack();

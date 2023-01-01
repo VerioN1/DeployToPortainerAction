@@ -11,6 +11,10 @@ const baseURL = core.getInput("deployment-env") === 'prod' ? "http://apps.varcod
 let api;
 let stackConfig = {};
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
 const connect = async() => {
     try {
         const {data: getJWToken} = await axios.post(`${baseURL}/auth`,{
@@ -66,6 +70,7 @@ const deleteStack = async() => {
             const {data: deleteStack} = await api.delete(`/stacks/${stackIdToDelete}?endpointId=2&external=false`);
             console.log(deleteStack);
         }
+        await sleep(6000)
         const {data:Images} = await api.get("/endpoints/2/docker/images/json?all=0");
         const removeImages = Images.map(image =>{
             if(image.RepoTags.find(tag => tag.includes(PROJECT_NAME))){
@@ -84,7 +89,7 @@ const deleteStack = async() => {
 }
 
 const main = async() => {
-    console.log('targetProject: ', PROJECT_NAME)
+    console.log('targetProject-await: ', PROJECT_NAME)
     await connect();
     await deleteStack();
     console.log(stackConfig);

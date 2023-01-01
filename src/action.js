@@ -89,7 +89,7 @@ const deleteStack = async() => {
 }
 
 const main = async() => {
-    console.log('targetProject-await: ', PROJECT_NAME)
+    console.log('targetProject-await:', PROJECT_NAME)
     await connect();
     await deleteStack();
     console.log(stackConfig);

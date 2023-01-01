@@ -88,6 +88,8 @@ const main = async() => {
     await connect();
     await deleteStack();
     console.log(stackConfig);
-    deployStack();
+    setTimeout(() => {
+        deployStack();
+    }, 1500);
 };
 main();

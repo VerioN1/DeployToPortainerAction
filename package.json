@@ -4,6 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
+    "start": "node ./src/action.js",
     "build": "ncc build src/action.js -o dist",
     "test": "deno run --allow-env --allow-net --allow-read --allow-write -A  index.js "
   },

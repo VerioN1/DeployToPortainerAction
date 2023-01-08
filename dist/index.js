@@ -9066,11 +9066,13 @@ const deleteStack = async() => {
         }
         const stackIdToDelete = currentStackConfig?.Id;
         if(stackIdToDelete){
+            console.log("Stopping stack...")
+            await api.post(`/stacks/${stackIdToDelete}/stop`);
+            sleep(1000);
             console.log("deleting stack", stackIdToDelete);
             const {data: deleteStack} = await api.delete(`/stacks/${stackIdToDelete}?endpointId=2&external=false`);
             console.log(deleteStack);
         }
-        await sleep(6000)
         const {data:Images} = await api.get("/endpoints/2/docker/images/json?all=0");
         const removeImages = Images.map(image =>{
             if(image.RepoTags.find(tag => tag.includes(PROJECT_NAME))){

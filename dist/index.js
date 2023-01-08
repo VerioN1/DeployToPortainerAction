@@ -9024,7 +9024,7 @@ const PROJECT_NAME = core.getInput("project-name") || "cam-code";
 const REPO_URL = core.getInput("current-repo-url") || 'https://github.com/VerioN1/cam-code/';
 const COMPOSE_FILE = "docker-compose-prod.yml";
 const ENV = []
-const BRANCH_NAME_REF = core.getInput('branch-ref') || "refs/heads/main";
+const BRANCH_NAME_REF = core.getInput('branch-ref') || "refs/heads/dev";
 const baseURL = core.getInput("deployment-env") === 'prod' ? "http://apps.varcode.com:9000/api" : "http://apps-dev.varcode.com:9000/api";
 // must run npm build before any push to master
 let api;
@@ -9056,6 +9056,18 @@ const connect = async() => {
     }
 }
 
+const killDockerEndPoints = async() => {
+    const {data: allDockerEndPoints} = await api.get("/endpoints/2/docker/containers/json?all=true");
+    const result = allDockerEndPoints.map(({Labels, Id}) => {
+        if(Labels["com.docker.compose.project"] === PROJECT_NAME){
+            console.log("killing container", Id);
+            return api.delete(`/endpoints/2/docker/containers/${Id}?v=0&force=true`);
+        }
+        return true;
+    });
+    return Promise.allSettled(result);
+}
+
 const deleteStack = async() => {
     try {
         console.log("initiating delete");
@@ -9066,6 +9078,8 @@ const deleteStack = async() => {
         }
         const stackIdToDelete = currentStackConfig?.Id;
         if(stackIdToDelete){
+            await killDockerEndPoints()
+            console.log(stackConfig);
             console.log("Stopping stack...")
             await api.post(`/stacks/${stackIdToDelete}/stop`);
             sleep(1000);
@@ -9084,14 +9098,15 @@ const deleteStack = async() => {
         await Promise.allSettled(removeImages);
 
     } catch (error) {
-      console.log(error.response.data);
-      if(error.response.data.message.includes("Stopping") || error.response.data.message.includes("Removing")){
-        console.log("stack is stopping, waiting 10 seconds");
-        await sleep(10000);
+        console.log(error);
+      console.log(error?.response?.data);
+      console.log(error?.response?.status);
+      console.log(error?.response?.headers);
+      if(error?.response?.data?.message?.includes("stop") || error?.response?.data?.message?.includes("Removing")){
+        console.log("stack is stopping, waiting 6 seconds");
+        await sleep(6000);
         await deleteStack();
       }
-      console.log(error.response.status);
-      console.log(error.response.headers);
     }
 }
 

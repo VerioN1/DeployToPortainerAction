@@ -59,14 +59,18 @@ const deleteStack = async() => {
         }
         const stackIdToDelete = currentStackConfig?.Id;
         if(stackIdToDelete){
-            await killDockerEndPoints()
-            console.log(stackConfig);
-            console.log("Stopping stack...")
-            await api.post(`/stacks/${stackIdToDelete}/stop`);
-            sleep(1000);
-            console.log("deleting stack", stackIdToDelete);
-            const {data: deleteStack} = await api.delete(`/stacks/${stackIdToDelete}?endpointId=2&external=false`);
-            console.log(deleteStack);
+            try {
+                console.log(stackConfig);
+                console.log("Stopping stack...")
+                await api.post(`/stacks/${stackIdToDelete}/stop`);
+                sleep(1000);
+                console.log("deleting stack", stackIdToDelete);
+                const {data: deleteStack} = await api.delete(`/stacks/${stackIdToDelete}?endpointId=2&external=false`);
+                console.log(deleteStack);
+            } catch (error) {
+                console.log(error);
+                await killDockerEndPoints()
+            }
         }
         const {data:Images} = await api.get("/endpoints/2/docker/images/json?all=0");
         const removeImages = Images.map(image =>{

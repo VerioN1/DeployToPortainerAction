@@ -9034,6 +9034,23 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
+const getCurrentStack = async() => {
+    try {
+        console.log("initiating delete");
+        const {data: getStacks} = await api.get("/stacks?filters=%7B%22EndpointID%22:2,%22IncludeOrphanedStacks%22:true%7D");
+        const currentStackConfig =  getStacks.find(stack => stack.Name === PROJECT_NAME);
+        if(currentStackConfig){
+            stackConfig = currentStackConfig;
+        }
+        return true;
+    } catch (error) {
+      console.log(error?.response?.data);
+      console.log(error?.response?.status);
+      console.log(error?.response?.headers);
+      return false;
+    }
+  
+}
 const connect = async() => {
     try {
         const {data: getJWToken} = await axios.post(`${baseURL}/auth`,{
@@ -9050,9 +9067,9 @@ const connect = async() => {
         });
         console.log("connected to portainer!");
     } catch (error) {
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
+        console.log(error?.response?.data);
+        console.log(error?.response?.status);
+        console.log(error?.response?.headers);
     }
 }
 
@@ -9068,82 +9085,119 @@ const killDockerEndPoints = async() => {
     return Promise.allSettled(result);
 }
 
-const deleteStack = async() => {
+const deleteImages = async() => {
     try {
-        console.log("initiating delete");
-        const {data: getStacks} = await api.get("/stacks?filters=%7B%22EndpointID%22:2,%22IncludeOrphanedStacks%22:true%7D");
-        const currentStackConfig =  getStacks.find(stack => stack.Name === PROJECT_NAME);
-        if(currentStackConfig){
-            stackConfig = currentStackConfig;
-        }
-        const stackIdToDelete = currentStackConfig?.Id;
-        if(stackIdToDelete){
-            try {
-                console.log(stackConfig);
-                console.log("Stopping stack...")
-                await api.post(`/stacks/${stackIdToDelete}/stop`);
-                sleep(1000);
-                console.log("deleting stack", stackIdToDelete);
-                const {data: deleteStack} = await api.delete(`/stacks/${stackIdToDelete}?endpointId=2&external=false`);
-                console.log(deleteStack);
-            } catch (error) {
-                console.log(error);
-                await killDockerEndPoints()
+        console.log("deleting images...");
+        const {data: allImages} =  await api.get('/endpoints/2/docker/images/json?all=0')
+        const result = allImages.map(async({Id, RepoTags}) => {
+            if(RepoTags.find(tag => tag.includes(PROJECT_NAME))){
+                console.log("deleting image", Id);
+                return await api.delete(`/endpoints/2/docker/images/${Id}`)
             }
-        }
-        const {data:Images} = await api.get("/endpoints/2/docker/images/json?all=0");
-        const removeImages = Images.map(image =>{
-            if(image.RepoTags.find(tag => tag.includes(PROJECT_NAME))){
-            console.log("deleting image", image.Id);
-            return api.delete(`/endpoints/2/docker/images/${image.Id}?force=false`);
-            }
-            return Promise.resolve();
         });
-        await Promise.allSettled(removeImages);
-
+        return await Promise.allSettled(result);
     } catch (error) {
-        console.log(error);
-      console.log(error?.response?.data);
-      console.log(error?.response?.status);
-      console.log(error?.response?.headers);
-      if(error?.response?.data?.message?.includes("stop") || error?.response?.data?.message?.includes("Removing")){
-        console.log("stack is stopping, waiting 6 seconds");
-        await sleep(6000);
-        await deleteStack();
-      }
+        console.log("error deleting image");
+        console.log(error?.response?.data);
+        console.log(error?.response?.status);
     }
 }
 
-const deployStack = async() => {
+const redeployStack = async() => {
     try {
-        console.log("deploying stack...");
-        console.log("Env variables", stackConfig?.Env);
-        const createStack = await api.post("/stacks?method=repository&type=2&endpointId=2",{
-            Name:PROJECT_NAME,
-            RepositoryURL: stackConfig?.GitConfig?.URL || REPO_URL,
-            ComposeFile: stackConfig?.GitConfig?.ConfigFilePath || COMPOSE_FILE,
+        console.log("redeploying stack...");
+        await api.put(`/stacks/${stackConfig?.Id}/git/redeploy?endpointId=2`,{
             Env: stackConfig?.Env || ENV,
+            prune: false,
+            pullImage:true,
             repositoryAuthentication: true,
             repositoryPassword: "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",
             repositoryReferenceName: stackConfig?.GitConfig?.ReferenceName || BRANCH_NAME_REF,
             repositoryUsername: "VerioN1"
         });
-        console.log("stack deployed!", JSON.stringify(createStack.data, null, 2));
+        console.log("stack deployed!");
     } catch (error) {
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
+      console.log(error?.response?.data);
+      console.log(error?.response?.status);
+      console.log(error?.response?.headers);
     }
 }
 
+// const deleteStack = async() => {
+//     try {
+//         const stackIdToDelete = currentStackConfig?.Id;
+//         if(stackIdToDelete){
+//             try {
+//                 console.log(stackConfig);
+//                 console.log("Stopping stack...")
+//                 await api.post(`/stacks/${stackIdToDelete}/stop`);
+//                 sleep(1000);
+//                 console.log("deleting stack", stackIdToDelete);
+//                 const {data: deleteStack} = await api.delete(`/stacks/${stackIdToDelete}?endpointId=2&external=false`);
+//                 console.log(deleteStack);
+//             } catch (error) {
+//                 console.log(error);
+//                 await killDockerEndPoints()
+//             }
+//         }
+//         const {data:Images} = await api.get("/endpoints/2/docker/images/json?all=0");
+//         const removeImages = Images.map(image =>{
+//             if(image.RepoTags.find(tag => tag.includes(PROJECT_NAME))){
+//             console.log("deleting image", image.Id);
+//             return api.delete(`/endpoints/2/docker/images/${image.Id}?force=false`);
+//             }
+//             return Promise.resolve();
+//         });
+//         await Promise.allSettled(removeImages);
+
+//     } catch (error) {
+//         console.log(error);
+//       console.log(error?.response?.data);
+//       console.log(error?.response?.status);
+//       console.log(error?.response?.headers);
+//       if(error?.response?.data?.message?.includes("stop") || error?.response?.data?.message?.includes("Removing")){
+//         console.log("stack is stopping, waiting 6 seconds");
+//         await sleep(6000);
+//         await deleteStack();
+//       }
+//     }
+// }
+
+// const createStack = async() => {
+//     try {
+//         console.log("creating stack...");
+//         await api.post("/stacks?method=repository&type=2&endpointId=2",{
+//             Name:PROJECT_NAME,
+//             RepositoryURL: stackConfig?.GitConfig?.URL || REPO_URL,
+//             ComposeFile: stackConfig?.GitConfig?.ConfigFilePath || COMPOSE_FILE,
+//             Env: stackConfig?.Env || ENV,
+//             repositoryAuthentication: true,
+//             repositoryPassword: "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",
+//             repositoryReferenceName: stackConfig?.GitConfig?.ReferenceName || BRANCH_NAME_REF,
+//             repositoryUsername: "VerioN1"
+//         });
+//         console.log("stack deployed!");
+//     } catch (error) {
+//       console.log(error.response.data);
+//       console.log(error.response.status);
+//       console.log(error.response.headers);
+//     }
+// }
+
 const main = async() => {
-    console.log('targetProject-await:', PROJECT_NAME)
+    console.log('Target Project:', PROJECT_NAME)
     await connect();
-    await deleteStack();
-    console.log(stackConfig);
-    setTimeout(() => {
-        deployStack();
-    }, 1500);
+    const shouldContinue = await getCurrentStack()
+    if(!shouldContinue){
+        console.log("stack not found, exiting");
+        return;
+    }
+    await killDockerEndPoints()
+    await sleep(1000)
+    await deleteImages();
+    console.log("done deleting images");
+    await sleep(4000)
+    await redeployStack();
 };
 main();
 })();

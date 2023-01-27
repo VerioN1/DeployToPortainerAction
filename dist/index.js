@@ -9025,7 +9025,7 @@ const REPO_URL = core.getInput("current-repo-url") || 'https://github.com/VerioN
 const COMPOSE_FILE = "docker-compose-prod.yml";
 const ENV = []
 const BRANCH_NAME_REF = core.getInput('branch-ref') || "refs/heads/dev";
-const baseURL = core.getInput("deployment-env") === 'prod' ? "http://apps.varcode.com:9000/api" : "http://apps-dev.varcode.com:9000/api";
+const baseURL = core.getInput("deployment-env");
 // must run npm build before any push to master
 let api;
 let stackConfig = {};

@@ -6,6 +6,9 @@ const REPO_URL = core.getInput("current-repo-url") || 'https://github.com/VerioN
 const COMPOSE_FILE = "docker-compose-prod.yml";
 const ENV = []
 const BRANCH_NAME_REF = core.getInput('branch-ref') || "refs/heads/dev";
+const GIT_USER = core.getInput("git-user") || "VerioN1";
+const GIT_TOKEN = core.getInput("git-token");
+
 const baseURL = core.getInput("deployment-env");
 // must run npm build before any push to master
 let api;
@@ -92,15 +95,16 @@ const redeployStack = async() => {
             prune: false,
             pullImage:true,
             repositoryAuthentication: true,
-            repositoryPassword: "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",
             repositoryReferenceName: stackConfig?.GitConfig?.ReferenceName || BRANCH_NAME_REF,
-            repositoryUsername: "VerioN1"
+            repositoryUsername: GIT_USER,
+            repositoryPassword: GIT_TOKEN
         });
         console.log("stack deployed!");
     } catch (error) {
       console.log(error?.response?.data);
       console.log(error?.response?.status);
       console.log(error?.response?.headers);
+      throw new Error("error redeploying stack");
     }
 }
 

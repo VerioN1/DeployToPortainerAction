@@ -14,8 +14,13 @@ inputs:
     default: 'https://github.com/VerioN1/cam-code-demo'
   branch-ref:
     descprtion: 'current repository branch ref'
-    default: 'refs/heads/main' 
-
+    default: 'refs/heads/main'
+  git-user:
+    descprtion: 'github Username'
+    default: 'username'     
+  git-token:
+    descprtion: 'Github private repo access token'
+    default: 'gpt_1234567890'  
 runs:
   using: 'node16'
   main: 'dist/index.js' 

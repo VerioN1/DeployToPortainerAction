@@ -3,7 +3,7 @@ const core = require("@actions/core");
 
 const PROJECT_NAME = core.getInput("project-name") || "cam-code";
 const REPO_URL = core.getInput("current-repo-url") || 'https://github.com/VerioN1/cam-code/';
-const COMPOSE_FILE = "docker-compose-prod.yml";
+const COMPOSE_FILE = core.getInput("docker-compose-file-name") || "docker-compose-prod.yml";
 const ENV = []
 const BRANCH_NAME_REF = core.getInput('branch-ref') || "refs/heads/dev";
 const GIT_USER = core.getInput("git-user") || "VerioN1";
@@ -95,6 +95,7 @@ const redeployStack = async() => {
             prune: false,
             pullImage:true,
             repositoryAuthentication: true,
+            ComposeFile: COMPOSE_FILE,
             repositoryReferenceName: stackConfig?.GitConfig?.ReferenceName || BRANCH_NAME_REF,
             repositoryUsername: GIT_USER,
             repositoryPassword: GIT_TOKEN
@@ -157,7 +158,6 @@ const redeployStack = async() => {
 //             ComposeFile: stackConfig?.GitConfig?.ConfigFilePath || COMPOSE_FILE,
 //             Env: stackConfig?.Env || ENV,
 //             repositoryAuthentication: true,
-//             repositoryPassword: "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",
 //             repositoryReferenceName: stackConfig?.GitConfig?.ReferenceName || BRANCH_NAME_REF,
 //             repositoryUsername: "VerioN1"
 //         });

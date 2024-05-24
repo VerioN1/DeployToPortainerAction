@@ -96,6 +96,7 @@ const redeployStack = async() => {
             pullImage:true,
             ComposeFile: COMPOSE_FILE,
             repositoryAuthentication: true,
+            ComposeFile: COMPOSE_FILE,
             repositoryReferenceName: stackConfig?.GitConfig?.ReferenceName || BRANCH_NAME_REF,
             repositoryUsername: GIT_USER,
             repositoryPassword: GIT_TOKEN
@@ -158,7 +159,6 @@ const redeployStack = async() => {
 //             ComposeFile: stackConfig?.GitConfig?.ConfigFilePath || COMPOSE_FILE,
 //             Env: stackConfig?.Env || ENV,
 //             repositoryAuthentication: true,
-//             repositoryPassword: "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",
 //             repositoryReferenceName: stackConfig?.GitConfig?.ReferenceName || BRANCH_NAME_REF,
 //             repositoryUsername: "VerioN1"
 //         });

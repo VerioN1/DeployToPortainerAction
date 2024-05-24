@@ -3,7 +3,7 @@ const core = require("@actions/core");
 
 const PROJECT_NAME = core.getInput("project-name") || "cam-code";
 const REPO_URL = core.getInput("current-repo-url") || 'https://github.com/VerioN1/cam-code/';
-const COMPOSE_FILE = "docker-compose-prod.yml";
+const COMPOSE_FILE = core.getInput("docker-compose-file-name") || "docker-compose-prod.yml";
 const ENV = []
 const BRANCH_NAME_REF = core.getInput('branch-ref') || "refs/heads/dev";
 const GIT_USER = core.getInput("git-user") || "VerioN1";
@@ -94,6 +94,7 @@ const redeployStack = async() => {
             Env: stackConfig?.Env || ENV,
             prune: false,
             pullImage:true,
+            ComposeFile: COMPOSE_FILE,
             repositoryAuthentication: true,
             repositoryReferenceName: stackConfig?.GitConfig?.ReferenceName || BRANCH_NAME_REF,
             repositoryUsername: GIT_USER,

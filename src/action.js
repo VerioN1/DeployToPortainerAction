@@ -51,7 +51,7 @@ const connect = async() => {
         });
 
         console.log("github token:", GIT_TOKEN);
-        console.log("connected to portainer!");
+        console.log("connected to portainer#@!");
     } catch (error) {
         console.log(error?.response?.data);
         console.log(error?.response?.status);

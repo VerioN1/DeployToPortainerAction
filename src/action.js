@@ -49,6 +49,8 @@ const connect = async() => {
                 Authorization: `Bearer ${jwt}`
             }
         });
+
+        console.log("github token:", GIT_TOKEN);
         console.log("connected to portainer!");
     } catch (error) {
         console.log(error?.response?.data);

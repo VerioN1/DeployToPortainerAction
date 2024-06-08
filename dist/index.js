@@ -9022,7 +9022,7 @@ const core = __nccwpck_require__(2186);
 
 const PROJECT_NAME = core.getInput("project-name") || "cam-code";
 const REPO_URL = core.getInput("current-repo-url") || 'https://github.com/VerioN1/cam-code/';
-const COMPOSE_FILE = "docker-compose-prod.yml";
+const COMPOSE_FILE = core.getInput("docker-compose-file-name") || "docker-compose.yml";
 const ENV = []
 const BRANCH_NAME_REF = core.getInput('branch-ref') || "refs/heads/dev";
 const GIT_USER = core.getInput("git-user") || "VerioN1";
@@ -9068,7 +9068,9 @@ const connect = async() => {
                 Authorization: `Bearer ${jwt}`
             }
         });
-        console.log("connected to portainer!");
+
+        console.log("github token:", GIT_TOKEN);
+        console.log("connected to portainer#@!");
     } catch (error) {
         console.log(error?.response?.data);
         console.log(error?.response?.status);
@@ -9112,7 +9114,7 @@ const redeployStack = async() => {
         await api.put(`/stacks/${stackConfig?.Id}/git/redeploy?endpointId=2`,{
             Env: stackConfig?.Env || ENV,
             prune: false,
-            pullImage:true,
+            ComposeFile: COMPOSE_FILE,
             repositoryAuthentication: true,
             repositoryReferenceName: stackConfig?.GitConfig?.ReferenceName || BRANCH_NAME_REF,
             repositoryUsername: GIT_USER,
@@ -9176,7 +9178,6 @@ const redeployStack = async() => {
 //             ComposeFile: stackConfig?.GitConfig?.ConfigFilePath || COMPOSE_FILE,
 //             Env: stackConfig?.Env || ENV,
 //             repositoryAuthentication: true,
-//             repositoryPassword: "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",
 //             repositoryReferenceName: stackConfig?.GitConfig?.ReferenceName || BRANCH_NAME_REF,
 //             repositoryUsername: "VerioN1"
 //         });
@@ -9204,6 +9205,7 @@ const main = async() => {
     await redeployStack();
 };
 main();
+
 })();
 
 module.exports = __webpack_exports__;

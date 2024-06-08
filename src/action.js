@@ -93,10 +93,8 @@ const redeployStack = async() => {
         await api.put(`/stacks/${stackConfig?.Id}/git/redeploy?endpointId=2`,{
             Env: stackConfig?.Env || ENV,
             prune: false,
-            pullImage:true,
             ComposeFile: COMPOSE_FILE,
             repositoryAuthentication: true,
-            ComposeFile: COMPOSE_FILE,
             repositoryReferenceName: stackConfig?.GitConfig?.ReferenceName || BRANCH_NAME_REF,
             repositoryUsername: GIT_USER,
             repositoryPassword: GIT_TOKEN

@@ -20,7 +20,10 @@ inputs:
     default: 'username'     
   git-token:
     descprtion: 'Github private repo access token'
-    default: 'gpt_1234567890'  
+    default: '-----'
+  docker-compose-file-name:
+    descprtion: 'Compose file name for deployment'
+    default: 'docker-compose.yml'  
 runs:
   using: 'node16'
   main: 'dist/index.js' 

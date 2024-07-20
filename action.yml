@@ -25,5 +25,5 @@ inputs:
     descprtion: 'Compose file name for deployment'
     default: 'docker-compose.yml'  
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js' 
